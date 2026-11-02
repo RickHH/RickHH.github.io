@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rui Hu</title>
+<meta name="author" content="Rui Hu">
+<meta name="description" content="Rui Hu — AIGC researcher at vivo BlueImage Lab. PhD, Zhejiang University; visiting at Harvard Medical School / MGH. Diffusion models, generative AI, vision-language models.">
+<link rel="canonical" href="https://rickhh.github.io/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236a5cff'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='32' fill='white' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rui Hu">
+<meta property="og:description" content="AIGC researcher — diffusion models, generative AI, vision-language models. PhD, Zhejiang University · vivo BlueImage Lab.">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0b0e" media="(prefers-color-scheme: dark)">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,600.italic&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<script>
+/* Set theme before first paint to avoid a flash. */
+try {
+  var t = localStorage.getItem('theme');
+  if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+} catch (e) {}
+</script>
+
+<style>
+/* ============ Tokens ============ */
+:root {
+  --bg: #fbfbfd;
+  --bg-soft: #f4f5f7;
+  --card: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --hairline: rgba(0, 0, 0, 0.09);
+  --text: #17171a;
+  --text-2: #6e6e73;
+  --accent: #0071e3;
+  --accent-2: #6a5cff;
+  --mark-bg: rgba(0, 113, 227, 0.09);
+  --chip-bg: rgba(0, 113, 227, 0.08);
+  --chip-green: rgba(52, 199, 89, 0.14);
+  --chip-green-t: #1d8a41;
+  --grad: linear-gradient(120deg, #2997ff, #6a5cff);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 22px 50px rgba(0, 0, 0, 0.13);
+  --header-bg: rgba(251, 251, 253, 0.72);
+}
+html[data-theme="dark"] {
+  --bg: #0b0b0e;
+  --bg-soft: #131318;
+  --card: #15151a;
+  --card-border: rgba(255, 255, 255, 0.09);
+  --hairline: rgba(255, 255, 255, 0.1);
+  --text: #f5f5f7;
+  --text-2: #a1a1a6;
+  --accent: #0a84ff;
+  --accent-2: #8e7bff;
+  --mark-bg: rgba(10, 132, 255, 0.16);
+  --chip-bg: rgba(10, 132, 255, 0.14);
+  --chip-green: rgba(52, 199, 89, 0.18);
+  --chip-green-t: #4cd964;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 22px 50px rgba(0, 0, 0, 0.55);
+  --header-bg: rgba(11, 11, 14, 0.72);
+}
+
+/* ============ Base ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16.5px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+.wrap { max-width: 820px; margin-inline: auto; padding: 0 24px; }
+.serif { font-family: "Source Serif 4", Georgia, serif; }
+.mono { font-family: "JetBrains Mono", ui-monospace, "SF Mono", monospace; }
+
+::selection { background: rgba(106, 92, 255, 0.25); }
+
+/* ============ Progress bar ============ */
+#progress {
+  position: fixed; top: 0; left: 0; height: 2.5px; width: 0%;
+  background: var(--grad); z-index: 100;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ============ Cursor glow (desktop only) ============ */
+#cursor-glow {
+  position: fixed; width: 460px; height: 460px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(106, 92, 255, 0.07), transparent 62%);
+  pointer-events: none; z-index: 0; transform: translate(-50%, -50%);
+  left: -600px; top: -600px;
+}
+@media (hover: none), (pointer: coarse) { #cursor-glow { display: none; } }
+
+/* ============ Header ============ */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease;
+}
+.site-header.is-stuck {
+  background: var(--header-bg);
+  -webkit-backdrop-filter: saturate(1.6) blur(16px);
+  backdrop-filter: saturate(1.6) blur(16px);
+  border-bottom-color: var(--hairline);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; padding: 15px 0;
+}
+.header-name {
+  font-family: "JetBrains Mono", monospace; font-size: 13.5px; font-weight: 600;
+  letter-spacing: 0.14em; text-decoration: none; color: var(--text);
+}
+.header-name span { color: var(--accent-2); }
+.header-nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.header-nav a {
+  font-size: 13.5px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 6px 11px; border-radius: 8px;
+  position: relative; transition: color 0.25s ease, background 0.25s ease;
+}
+.header-nav a:hover { color: var(--text); background: var(--chip-bg); }
+.header-nav a.is-active { color: var(--accent); }
+.header-nav a.is-active::after {
+  content: ""; position: absolute; left: 11px; right: 11px; bottom: 2px;
+  height: 2px; border-radius: 2px; background: var(--grad);
+}
+.theme-toggle {
+  width: 34px; height: 34px; margin-left: 6px;
+  border-radius: 50%; border: 1px solid var(--card-border);
+  background: var(--card); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text); position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.theme-toggle:hover { transform: rotate(20deg) scale(1.06); border-color: var(--accent); }
+.theme-toggle svg { width: 16px; height: 16px; position: absolute; transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+html[data-theme="dark"] .icon-sun { opacity: 1; transform: rotate(0deg); }
+html[data-theme="dark"] .icon-moon { opacity: 0; transform: rotate(90deg) scale(0.4); }
+html:not([data-theme="dark"]) .icon-sun { opacity: 0; transform: rotate(-90deg) scale(0.4); }
+html:not([data-theme="dark"]) .icon-moon { opacity: 1; transform: rotate(0deg); }
+
+/* ============ Hero ============ */
+.hero {
+  display: grid; grid-template-columns: 1.55fr auto;
+  gap: 48px; align-items: center;
+  padding: 72px 0 64px;
+}
+.hero-text .rise { animation: rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-text .rise:nth-child(2) { animation-delay: 0.1s; }
+.hero-text .rise:nth-child(3) { animation-delay: 0.2s; }
+.hero-text .rise:nth-child(4) { animation-delay: 0.3s; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+h1.name {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: clamp(40px, 6vw, 54px); font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.08; margin: 0 0 14px;
+}
+h1.name em {
+  font-style: normal;
+  background: var(--grad);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.role {
+  font-size: 14.5px; color: var(--text-2); margin: 0 0 22px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px;
+}
+.role .sep { opacity: 0.5; }
+.role a { color: var(--text-2); text-decoration: none; border-bottom: 1px dashed var(--hairline); }
+.role a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.role-focus { font-weight: 600; color: var(--accent-2); }
+.role-focus::after {
+  content: ""; display: inline-block; width: 2px; height: 1em;
+  background: var(--accent-2); margin-left: 3px; vertical-align: -0.15em;
+  animation: blink 1.05s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.bio { font-size: 16px; color: var(--text-2); margin: 0 0 15px; }
+.bio strong { color: var(--text); font-weight: 600; }
+.bio a { color: var(--accent); font-weight: 500; text-decoration: none; }
+.bio a:hover { text-decoration: underline; }
+
+.hero-media { display: flex; flex-direction: column; align-items: center; gap: 20px; animation: rise 0.85s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-photo {
+  width: 208px; height: 208px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.35), transparent 45%),
+    linear-gradient(135deg, #2997ff, #6a5cff);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg), 0 0 0 6px var(--bg), 0 0 0 7.5px var(--card-border);
+  position: relative; overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+}
+.hero-photo:hover { transform: scale(1.035) rotate(1.2deg); box-shadow: var(--shadow-lg), 0 0 0 6px var(--bg), 0 0 24px rgba(106, 92, 255, 0.35); }
+.hero-photo .ph-initials {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 64px; font-weight: 700; color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.02em; user-select: none;
+}
+.hero-photo .ph-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.social-list { display: flex; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.social-item {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 100px;
+  background: var(--card); border: 1px solid var(--card-border);
+  font-size: 13px; font-weight: 600; text-decoration: none; color: var(--text);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.social-item svg { width: 15px; height: 15px; fill: currentColor; opacity: 0.75; }
+.social-item:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--accent); color: var(--accent); }
+
+/* ============ Sections ============ */
+section { padding: 46px 0; }
+.section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px; }
+.section-index {
+  font-family: "JetBrains Mono", monospace; font-size: 13px; font-weight: 600;
+  color: var(--accent-2); letter-spacing: 0.08em;
+}
+.section-title {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: clamp(26px, 4vw, 32px); font-weight: 700;
+  letter-spacing: -0.015em; margin: 0;
+}
+
+/* ============ News timeline ============ */
+.timeline { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
+.timeline::before {
+  content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+  border-radius: 2px; opacity: 0.55;
+}
+.news-item { position: relative; padding: 0 0 26px; }
+.news-item:last-child { padding-bottom: 0; }
+.news-item::before {
+  content: ""; position: absolute; left: -26px; top: 7px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--bg); border: 2.5px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--chip-bg);
+}
+.news-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.mono-date { font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 600; color: var(--text-2); letter-spacing: 0.04em; }
+.badge {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2.5px 10px; border-radius: 100px;
+  background: var(--chip-bg); color: var(--accent);
+}
+.badge[data-kind="work"] { background: var(--chip-green); color: var(--chip-green-t); }
+.news-text { font-size: 15px; color: var(--text-2); margin: 0 0 8px; }
+.news-text strong { color: var(--text); font-weight: 600; }
+.news-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.mlink {
+  font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none;
+  padding: 3.5px 12px; border-radius: 100px;
+  background: var(--chip-bg); border: 1px solid transparent;
+  transition: all 0.25s ease;
+}
+.mlink:hover { background: var(--accent); color: #fff; transform: translateY(-1.5px); }
+.show-more {
+  margin-top: 20px; font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 600;
+  color: var(--text-2); background: none; border: 1px dashed var(--card-border);
+  border-radius: 100px; padding: 8px 20px; cursor: pointer;
+  transition: all 0.3s ease;
+}
+.show-more:hover { color: var(--accent); border-color: var(--accent); background: var(--chip-bg); }
+
+/* ============ Research cards ============ */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 20px; overflow: hidden;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+.card:hover { --lift: -6px; box-shadow: var(--shadow-lg); }
+@media (hover: none), (pointer: coarse) { .card { transform: none; } .card:hover { transform: translateY(-4px); } }
+.card-figure {
+  height: 168px; margin: 0; border: 0; padding: 0; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 46px; position: relative; overflow: hidden; cursor: default;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--p1, #2997ff) 16%, transparent), color-mix(in srgb, var(--p2, #6a5cff) 16%, transparent)),
+    var(--bg-soft);
+}
+.card-figure::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--p1, #2997ff), var(--p2, #6a5cff));
+  opacity: 0.13;
+}
+.card-figure .fig-emoji { position: relative; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.card:hover .fig-emoji { transform: scale(1.16) rotate(-5deg); }
+.card-figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.card-figure.has-img { cursor: zoom-in; }
+.card:hover .card-figure img { transform: scale(1.05); }
+.card-body { padding: 20px 22px 22px; }
+.card-title {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 17.5px; font-weight: 600; line-height: 1.35;
+  text-decoration: none; color: var(--text); display: inline;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat; background-size: 0% 1.5px; background-position: 0 100%;
+  transition: background-size 0.35s ease, color 0.25s ease;
+}
+.card-title:hover { color: var(--accent); background-size: 100% 1.5px; }
+.card-venue {
+  font-family: "JetBrains Mono", monospace; font-size: 11.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-2); margin: 8px 0 8px;
+}
+.card-desc { font-size: 14px; color: var(--text-2); margin: 0 0 14px; }
+.mark {
+  background: linear-gradient(transparent 58%, var(--mark-bg) 58%);
+  color: var(--text); font-weight: 500;
+  padding: 0 1px;
+}
+.card-links { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ============ Publications ============ */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.filter-btn {
+  font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 500;
+  color: var(--text-2); background: var(--card);
+  border: 1px solid var(--card-border); border-radius: 100px;
+  padding: 6.5px 16px; cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.filter-btn:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-1.5px); }
+.filter-btn.is-active {
+  background: var(--text); color: var(--bg); border-color: var(--text);
+  transform: none;
+}
+.pub-list { list-style: none; margin: 0; padding: 0; }
+.pub-item {
+  padding: 20px 2px; border-bottom: 1px solid var(--hairline);
+  animation: pubIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pubIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.pub-title {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 16.5px; font-weight: 600; line-height: 1.4;
+  color: var(--text); text-decoration: none;
+  transition: color 0.25s ease;
+}
+.pub-title:hover { color: var(--accent); }
+.pub-meta { display: flex; align-items: center; gap: 10px; margin: 6px 0 10px; flex-wrap: wrap; }
+.pub-venue { font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 500; color: var(--text-2); }
+.chip {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 2px 10px; border-radius: 100px;
+  background: var(--chip-bg); color: var(--accent);
+}
+.chip.chip-medical { background: var(--chip-green); color: var(--chip-green-t); }
+.chip.chip-vlm { background: var(--chip-purple, #f1e8ff); color: #7c3aed; }
+.pub-authors { font-size: 13.5px; color: var(--text-2); margin: 0 0 10px; line-height: 1.55; }
+.pub-authors strong { color: var(--text); font-weight: 650; }
+.pub-authors sup { color: var(--accent); font-weight: 600; font-size: 10px; margin-left: 1px; }
+.pub-note { margin: 20px 2px 0; font-size: 12.5px; color: var(--text-2); font-family: "JetBrains Mono", monospace; }
+.pub-note sup { color: var(--accent); }
+.pub-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pub-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.tldr-btn {
+  margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600;
+  color: var(--text-2); background: none; border: 1px dashed var(--card-border);
+  border-radius: 8px; padding: 3.5px 11px; cursor: pointer;
+  transition: all 0.25s ease;
+}
+.tldr-btn:hover { color: var(--accent); border-color: var(--accent); }
+.pub-tldr { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.pub-tldr > div { overflow: hidden; }
+.pub-tldr p {
+  margin: 12px 0 2px; font-size: 14px; color: var(--text-2);
+  padding: 12px 16px; border-left: 2.5px solid var(--accent-2);
+  background: var(--bg-soft); border-radius: 0 12px 12px 0;
+}
+.pub-tldr.open { grid-template-rows: 1fr; }
+
+/* ============ Journey ============ */
+.jt { position: relative; padding-left: 28px; }
+.jt::before {
+  content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2), transparent);
+  border-radius: 2px;
+  transform: scaleY(0); transform-origin: top;
+  transition: transform 1.2s 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+section.reveal.in .jt::before { transform: scaleY(1); }
+.jt-item { position: relative; padding-bottom: 30px; }
+.jt-item:last-child { padding-bottom: 0; }
+.jt-item::before {
+  content: ""; position: absolute; left: -28px; top: 6px;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--bg); border: 3px solid var(--accent-2);
+  box-shadow: 0 0 0 4px var(--chip-bg);
+}
+.jt-date { font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.jt-item h3 { font-size: 17.5px; font-weight: 650; margin: 0 0 2px; letter-spacing: -0.01em; }
+.jt-item h4 { font-size: 14px; font-weight: 500; color: var(--text-2); margin: 0 0 7px; }
+.jt-item h4 a.jt-org { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color 0.25s ease, border-color 0.25s ease; }
+.jt-item h4 a.jt-org:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.jt-item p { font-size: 14.5px; color: var(--text-2); margin: 0; }
+.jt-item p a { color: var(--accent); font-weight: 500; text-decoration: none; }
+.jt-item p a:hover { text-decoration: underline; }
+.jt-item p strong { color: var(--text); font-weight: 600; }
+
+/* ============ Contact / Footer ============ */
+.contact-box { text-align: center; padding: 56px 0 30px; }
+.contact-box h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.contact-box > p { color: var(--text-2); font-size: 16px; margin: 0 0 28px; }
+.site-footer {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  border-top: 1px solid var(--hairline); margin-top: 40px; padding: 22px 0 30px;
+  font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--text-2);
+}
+
+/* ============ Lightbox ============ */
+.lightbox[hidden] { display: none; }
+.lightbox {
+position: fixed; inset: 0; z-index: 200;
+  background: rgba(10, 10, 14, 0.82);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.28s ease;
+  cursor: zoom-out;
+}
+.lightbox.is-open { opacity: 1; }
+.lightbox img {
+  max-width: min(92vw, 1000px); max-height: 88vh;
+  border-radius: 14px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  transform: scale(0.94); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lightbox.is-open img { transform: scale(1); }
+
+/* ============ Reveal on scroll ============ */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.in { opacity: 1; transform: none; }
+.d1 { transition-delay: 0.07s; } .d2 { transition-delay: 0.14s; }
+.d3 { transition-delay: 0.21s; } .d4 { transition-delay: 0.28s; }
+
+/* ============ Responsive ============ */
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; gap: 36px; padding: 52px 0 44px; }
+  .hero-media { order: -1; align-items: flex-start; }
+  .cards { grid-template-columns: 1fr; }
+  .tldr-btn { margin-left: 0; }
+}
+@media (max-width: 520px) {
+  .header-nav a { padding: 6px 8px; font-size: 12.5px; }
+  .hero-photo { width: 168px; height: 168px; }
+}
+
+/* ============ Reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+</style>
+<noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="cursor-glow"></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <a class="header-name" href="#top">RUI HU<span>.</span></a>
+    <nav class="header-nav">
+      <a href="#news">News</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#journey">Journey</a>
+      <a href="#contact">Contact</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1 class="name rise">Rui <em>Hu</em></h1>
+      <p class="role rise">
+        <a href="mailto:rickhu@vivo.com">rickhu@vivo.com</a>
+        <span class="sep">·</span>
+        <span class="role-focus" id="typewriter"></span>
+      </p>
+      <p class="bio rise">
+        I am an AIGC researcher at <a href="https://blueimage.vivo.com/#/index" target="_blank" rel="noopener">vivo BlueImage Lab</a>,
+        building <strong>on-device generative AI</strong> for flagship smartphones — including
+        <strong>Flash Portrait 2.0</strong>, a 4K sub-second portrait tone-mapping pipeline shipped on the
+        <a href="https://www.vivo.com.cn/vivo/x300ultra/" target="_blank" rel="noopener">vivo X300 Ultra</a>.
+      </p>
+      <p class="bio rise">
+        I received my Ph.D. in <strong>Information Sensor &amp; Instrument Engineering</strong> from
+        <a href="https://www.zju.edu.cn/english/" target="_blank" rel="noopener">Zhejiang University</a>, advised by
+        Prof. <a href="https://scholar.google.com/citations?user=JbkbGvEAAAAJ&hl=zh-CN" target="_blank" rel="noopener">Huafeng Liu</a>,
+        with the kind guidance of Prof. <a href="https://people.clas.ufl.edu/yun/" target="_blank" rel="noopener">Yunmei Chen</a>.
+        During my visiting year, I worked with the
+        <a href="https://camca.mgh.harvard.edu/" target="_blank" rel="noopener">CAMCA lab</a> at
+        <a href="https://hms.harvard.edu/" target="_blank" rel="noopener">Harvard Medical School</a> /
+        <a href="https://www.mgh.harvard.edu/" target="_blank" rel="noopener">Massachusetts General Hospital</a>,
+        supervised by Prof. <a href="https://scholar.google.com/citations?user=MHq2z7oAAAAJ&hl=en" target="_blank" rel="noopener">Quanzheng Li</a>,
+        on personalized PBPK modeling and diffusion-based medical applications. My research spans
+        <strong>diffusion models</strong>, <strong>generative AI</strong>, and <strong>vision-language models</strong> —
+        from controllable generation and virtual try-on to medical imaging inverse problems.
+      </p>
+    </div>
+
+    <div class="hero-media">
+      <!-- ✏️ Replace with your photo: <img class="ph-img" src="images/profile.jpg" alt="Rui Hu"> -->
+      <div class="hero-photo" id="hero-photo">
+        <span class="ph-initials">RH</span>
+      </div>
+      <ul class="social-list">
+        <li><a class="social-item" href="mailto:rickhu@vivo.com" aria-label="Email">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13Zm2.68-.5 7.32 6.13L19.32 5H4.68ZM20 6.9l-7.34 6.15a1 1 0 0 1-1.32 0L4 6.9V19h16V6.9Z"/></svg>
+          <span>Email</span>
+        </a></li>
+        <li><a class="social-item" href="https://github.com/RickHH" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          <span>GitHub</span>
+        </a></li>
+        <li><a class="social-item" href="https://scholar.google.com/citations?user=AN_J0DYAAAAJ&hl=zh-CN" target="_blank" rel="noopener" aria-label="Google Scholar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3Zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9ZM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72Z"/></svg>
+          <span>Scholar</span>
+        </a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ NEWS ============ -->
+  <section id="news" class="reveal">
+    <div class="section-head"><span class="section-index">01</span><h2 class="section-title">News</h2></div>
+    <ul class="timeline">
+      <li class="news-item reveal d1">
+        <div class="news-meta"><span class="mono-date">Jan 2026</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>Q-Cache</strong> accepted to <strong>AAAI 2026</strong> — visual attention is valuable in less than half of decode layers for multimodal LLMs; <strong>ST³</strong> accepted to <strong>AAAI 2025</strong> — accelerating multimodal LLMs by spatial-temporal visual token trimming.</p>
+        <div class="news-links"><a class="mlink" href="https://ojs.aaai.org/index.php/AAAI/article/view/38414" target="_blank" rel="noopener">Q-Cache</a><a class="mlink" href="https://ojs.aaai.org/index.php/AAAI/article/view/33201" target="_blank" rel="noopener">ST³</a></div>
+      </li>
+      <li class="news-item reveal d2">
+        <div class="news-meta"><span class="mono-date">Aug 2025</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>LMPDnet</strong> — a deep unrolled primal-dual network for TOF-PET list-mode reconstruction — was published in <strong>Physics in Medicine &amp; Biology</strong>.</p>
+        <div class="news-links"><a class="mlink" href="https://pubmed.ncbi.nlm.nih.gov/40780257/" target="_blank" rel="noopener">PubMed</a><a class="mlink" href="https://github.com/RickHH/LMPDnet" target="_blank" rel="noopener">Code</a></div>
+      </li>
+      <li class="news-item reveal d3">
+        <div class="news-meta"><span class="mono-date">Jul 2025</span><span class="badge" data-kind="work">work</span></div>
+        <p class="news-text">Joined <strong><a href="https://blueimage.vivo.com/#/index" target="_blank" rel="noopener" style="color:inherit;">vivo BlueImage Lab</a></strong> to work on on-device AIGC — portrait relighting and flash photography. First flagship shipment: <strong>Flash Portrait 2.0</strong> on the vivo X300 Ultra.</p>
+        <div class="news-links"><a class="mlink" href="https://www.vivo.com.cn/vivo/x300ultra/" target="_blank" rel="noopener">vivo X300 Ultra</a><a class="mlink" href="https://www.vivo.com.cn/service/questions/all?categoryId=156&amp;questionId=1922" target="_blank" rel="noopener">Feature intro</a></div>
+      </li>
+      <li class="news-item reveal" data-extra hidden>
+        <div class="news-meta"><span class="mono-date">Oct 2024</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>FashionR2R</strong> was accepted to <strong>NeurIPS 2024</strong> — texture-preserving rendered-to-real image translation for virtual try-on with diffusion models. <strong>FALIP</strong> (foveal visual prompting for CLIP zero-shot) was presented at <strong>ECCV 2024</strong>.</p>
+        <div class="news-links"><a class="mlink" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">FashionR2R arXiv</a><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-72684-2_14" target="_blank" rel="noopener">FALIP Paper</a></div>
+      </li>
+      <li class="news-item reveal" data-extra hidden>
+        <div class="news-meta"><span class="mono-date">Oct 2024</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>PET/MR denoising</strong> work was presented at <strong>MICCAI 2024</strong> — a volumetric conditional score-based residual diffusion model.</p>
+        <div class="news-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-72104-5_72" target="_blank" rel="noopener">Paper</a></div>
+      </li>
+      <li class="news-item reveal" data-extra hidden>
+        <div class="news-meta"><span class="mono-date">Oct 2023</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>DULDA</strong> was presented at <strong>MICCAI 2023</strong> — a dual-domain unsupervised learned descent algorithm for PET image reconstruction.</p>
+        <div class="news-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">Paper</a></div>
+      </li>
+      <li class="news-item reveal" data-extra hidden>
+        <div class="news-meta"><span class="mono-date">Sep 2022</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>TransEM</strong> was presented at <strong>MICCAI 2022</strong> — residual Swin-Transformer based regularized PET reconstruction.</p>
+        <div class="news-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">Paper</a><a class="mlink" href="https://github.com/RickHH/TransEM" target="_blank" rel="noopener">Code</a></div>
+      </li>
+    </ul>
+    <button class="show-more" id="news-toggle" type="button">Show all news ↓</button>
+  </section>
+
+  <!-- ============ SELECTED RESEARCH ============ -->
+  <section id="research" class="reveal">
+    <div class="section-head"><span class="section-index">02</span><h2 class="section-title">Selected Research</h2></div>
+    <div class="cards">
+
+      <article class="card reveal d1">
+        <div class="card-figure" style="--p1:#2997ff;--p2:#6a5cff;">
+          <span class="fig-emoji">👗</span>
+          <!-- ✏️ Teaser image: replace the emoji span with <img src="..." alt="FashionR2R teaser"> -->
+        </div>
+        <div class="card-body">
+          <a class="card-title" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">FashionR2R: Texture-preserving Rendered-to-Real Image Translation with Diffusion Models</a>
+          <p class="card-venue">NeurIPS · 2024</p>
+          <p class="card-desc"><span class="mark">Texture-preserving</span> rendered-to-real translation for <span class="mark">virtual try-on</span>, bridging rendered fashion images and real photos with diffusion models.</p>
+          <div class="card-links"><a class="mlink" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://rickhh.github.io/FashionR2R/" target="_blank" rel="noopener">Project</a><a class="mlink" href="https://github.com/Style3D/FashionR2R" target="_blank" rel="noopener">Code</a></div>
+        </div>
+      </article>
+
+      <article class="card reveal d2">
+        <div class="card-figure" style="--p1:#ff9f43;--p2:#ff5e8a;">
+          <span class="fig-emoji">📡</span>
+        </div>
+        <div class="card-body">
+          <a class="card-title" href="https://pubmed.ncbi.nlm.nih.gov/40780257/" target="_blank" rel="noopener">Deep Unrolled Primal-Dual Network for TOF-PET List-Mode Image Reconstruction</a>
+          <p class="card-venue">Phys Med Biol · 2025</p>
+          <p class="card-desc"><span class="mark">Deep unrolling</span> of the primal-dual optimization steps to reconstruct TOF-PET images <span class="mark">directly from list-mode data</span>.</p>
+          <div class="card-links"><a class="mlink" href="https://pubmed.ncbi.nlm.nih.gov/40780257/" target="_blank" rel="noopener">PubMed</a><a class="mlink" href="https://github.com/RickHH/LMPDnet" target="_blank" rel="noopener">Code</a></div>
+        </div>
+      </article>
+
+      <article class="card reveal d3">
+        <div class="card-figure" style="--p1:#00c7be;--p2:#34c759;">
+          <span class="fig-emoji">🔬</span>
+        </div>
+        <div class="card-body">
+          <a class="card-title" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">DULDA: Dual-Domain Unsupervised Learned Descent Algorithm for PET Image Reconstruction</a>
+          <p class="card-venue">MICCAI · 2023</p>
+          <p class="card-desc"><span class="mark">Label-free</span> learned descent in both image and sinogram domains — trained <span class="mark">without ground-truth images</span>, straight from measured data.</p>
+          <div class="card-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">Paper</a></div>
+        </div>
+      </article>
+
+      <article class="card reveal d4">
+        <div class="card-figure" style="--p1:#a259ff;--p2:#ff5e8a;">
+          <span class="fig-emoji">🩻</span>
+        </div>
+        <div class="card-body">
+          <a class="card-title" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">TransEM: Residual Swin-Transformer Based Regularized PET Image Reconstruction</a>
+          <p class="card-venue">MICCAI · 2022</p>
+          <p class="card-desc">Embeds a <span class="mark">residual Swin-Transformer prior</span> into an EM-style loop for regularized PET reconstruction with sharper details.</p>
+          <div class="card-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">Paper</a><a class="mlink" href="https://github.com/RickHH/TransEM" target="_blank" rel="noopener">Code</a></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ PUBLICATIONS ============ -->
+  <section id="publications" class="reveal">
+    <div class="section-head"><span class="section-index">03</span><h2 class="section-title">Publications</h2></div>
+
+    <div class="filters" id="pub-filters">
+      <button class="filter-btn is-active" type="button" data-filter="selected">Selected</button>
+      <button class="filter-btn" type="button" data-filter="all">All</button>
+      <button class="filter-btn" type="button" data-filter="aigc">AIGC</button>
+      <button class="filter-btn" type="button" data-filter="vlm">VLM Acceleration</button>
+      <button class="filter-btn" type="button" data-filter="medical">Medical Imaging</button>
+    </div>
+
+    <ul class="pub-list" id="pub-list">
+      <li class="pub-item" data-cats="aigc" data-selected>
+        <a class="pub-title" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">FashionR2R: Texture-preserving Rendered-to-Real Image Translation with Diffusion Models</a>
+        <div class="pub-meta"><span class="pub-venue">NeurIPS · 2024</span><span class="chip">AIGC</span></div>
+        <p class="pub-authors"><strong>Rui Hu</strong><sup>†</sup>, Qian He<sup>†</sup>, Gaofeng He, Jiedong Zhuang, Huang Chen, Huafeng Liu<sup>*</sup>, Huamin Wang</p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://rickhh.github.io/FashionR2R/" target="_blank" rel="noopener">Project</a><a class="mlink" href="https://github.com/Style3D/FashionR2R" target="_blank" rel="noopener">Code</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>A diffusion-based rendered-to-real translation framework that preserves garment texture for virtual try-on, bridging the domain gap between rendered and real fashion photos.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="vlm">
+        <a class="pub-title" href="https://ojs.aaai.org/index.php/AAAI/article/view/38414" target="_blank" rel="noopener">Q-Cache: Visual Attention Is Valuable in Less than Half of Decode Layers for Multimodal Large Language Model</a>
+        <div class="pub-meta"><span class="pub-venue">AAAI · 2026</span><span class="chip chip-vlm">VLM</span></div>
+        <p class="pub-authors">Jiedong Zhuang, Lu Lu, Ming Dai, <strong>Rui Hu</strong>, Jian Chen, Qiang Liu, Haoji Hu</p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://ojs.aaai.org/index.php/AAAI/article/download/38414/42376" target="_blank" rel="noopener">PDF</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>Shows that visual attention matters in fewer than half of MLLM decode layers, and caches visual KV selectively to accelerate multimodal inference without quality loss.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="vlm">
+        <a class="pub-title" href="https://ojs.aaai.org/index.php/AAAI/article/view/33201" target="_blank" rel="noopener">ST$^{3}$: Accelerating Multimodal Large Language Model by Spatial-Temporal Visual Token Trimming</a>
+        <div class="pub-meta"><span class="pub-venue">AAAI · 2025</span><span class="chip chip-vlm">VLM</span></div>
+        <p class="pub-authors">Jiedong Zhuang, Lu Lu, Ming Dai, <strong>Rui Hu</strong>, Jian Chen, Qiang Liu, Haoji Hu</p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://ojs.aaai.org/index.php/AAAI/article/download/33201/35356" target="_blank" rel="noopener">PDF</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>Trims redundant visual tokens across spatial and temporal dimensions to speed up multimodal large language models while preserving answer quality.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="aigc vlm">
+        <a class="pub-title" href="https://link.springer.com/chapter/10.1007/978-3-031-72684-2_14" target="_blank" rel="noopener">FALIP: Visual Prompt as Foveal Attention Boosts CLIP Zero-Shot Performance</a>
+        <div class="pub-meta"><span class="pub-venue">ECCV · 2024</span><span class="chip">AIGC</span><span class="chip chip-vlm">VLM</span></div>
+        <p class="pub-authors">Jiedong Zhuang, Jiaqi Hu, Lianrui Mu, <strong>Rui Hu</strong>, Xiaoyu Liang, Jiangnan Ye, Haoji Hu</p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-72684-2_14" target="_blank" rel="noopener">Paper</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>Turns a small visual prompt into a foveal attention mask for CLIP, mimicking human central vision to boost zero-shot classification without fine-tuning.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="medical" data-selected>
+        <a class="pub-title" href="https://pubmed.ncbi.nlm.nih.gov/40780257/" target="_blank" rel="noopener">Deep Unrolled Primal-Dual Network for TOF-PET List-Mode Image Reconstruction</a>
+        <div class="pub-meta"><span class="pub-venue">Phys Med Biol · 2025</span><span class="chip chip-medical">Medical</span></div>
+        <p class="pub-authors"><strong>Rui Hu</strong>, Chenxu Li, Kun Tian, Jianan Cui, Yunmei Chen, Huafeng Liu<sup>*</sup></p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://pubmed.ncbi.nlm.nih.gov/40780257/" target="_blank" rel="noopener">PubMed</a><a class="mlink" href="https://github.com/RickHH/LMPDnet" target="_blank" rel="noopener">Code</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>Unrolls the primal-dual optimization into a trainable network that reconstructs TOF-PET images directly from list-mode events, improving resolution and quantitativeness over histogram-based pipelines.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="medical">
+        <a class="pub-title" href="https://link.springer.com/chapter/10.1007/978-3-031-72104-5_72" target="_blank" rel="noopener">Volumetric Conditional Score-Based Residual Diffusion Model for PET/MR Denoising</a>
+        <div class="pub-meta"><span class="pub-venue">MICCAI · 2024</span><span class="chip chip-medical">Medical</span></div>
+        <p class="pub-authors">Siyeop Yoon<sup>†</sup>, Matthew Tivnan<sup>†</sup>, <strong>Rui Hu</strong>, Yuang Wang, Young-don Son, Dufan Wu, Xiang Li, Kyungsang Kim, Quanzheng Li<sup>*</sup></p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-72104-5_72" target="_blank" rel="noopener">Paper</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>A volumetric score-based diffusion model that conditions on MR anatomy to denoise low-dose PET, combining diffusion priors with residual learning for 3D consistency.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="medical">
+        <a class="pub-title" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">DULDA: Dual-Domain Unsupervised Learned Descent Algorithm for PET Image Reconstruction</a>
+        <div class="pub-meta"><span class="pub-venue">MICCAI · 2023</span><span class="chip chip-medical">Medical</span></div>
+        <p class="pub-authors"><strong>Rui Hu</strong>, Yunmei Chen, Kyungsang Kim, Marcio A. B. C. Rockenbach, Quanzheng Li<sup>*</sup>, Huafeng Liu<sup>*</sup></p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">Paper</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>An unsupervised learned descent algorithm operating in both image and sinogram domains — trained without ground-truth images, directly from measured PET data.</p></div></div>
+      </li>
+
+      <li class="pub-item" data-cats="medical">
+        <a class="pub-title" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">TransEM: Residual Swin-Transformer Based Regularized PET Image Reconstruction</a>
+        <div class="pub-meta"><span class="pub-venue">MICCAI · 2022</span><span class="chip chip-medical">Medical</span></div>
+        <p class="pub-authors"><strong>Rui Hu</strong>, Huafeng Liu<sup>*</sup></p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">Paper</a><a class="mlink" href="https://github.com/RickHH/TransEM" target="_blank" rel="noopener">Code</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>Embeds a residual Swin-Transformer prior into an EM-style reconstruction loop, yielding regularized PET images with sharper structural detail and reduced noise.</p></div></div>
+      </li>
+    </ul>
+    <p class="pub-note"><sup>†</sup> Equal contribution&nbsp;&nbsp;·&nbsp;&nbsp;<sup>*</sup> Corresponding author. Author lists verified against the official publisher records.</p>
+    <p class="pub-empty" id="pub-empty" hidden style="color:var(--text-2);font-size:14px;">No publications in this category.</p>
+  </section>
+
+  <!-- ============ JOURNEY ============ -->
+  <section id="journey" class="reveal">
+    <div class="section-head"><span class="section-index">04</span><h2 class="section-title">Journey</h2></div>
+    <div class="jt">
+      <div class="jt-item reveal d1">
+        <div class="jt-date">Jul 2025 — Present</div>
+        <h3>AI Researcher &amp; Engineer</h3>
+        <h4><a href="https://blueimage.vivo.com/#/index" target="_blank" rel="noopener" class="jt-org">vivo BlueImage Lab</a> · Hangzhou</h4>
+        <p>On-device AIGC models and applications, focusing on <strong>portrait relighting</strong>. Shipped <strong>Flash Portrait 2.0</strong> — a 4K sub-second AIGC tone-mapping solution on flagship devices. <a href="https://www.vivo.com.cn/vivo/x300ultra/" target="_blank" rel="noopener">vivo X300 Ultra →</a></p>
+      </div>
+      <div class="jt-item reveal d2">
+        <div class="jt-date">2023 — 2024</div>
+        <h3>Visiting PhD Student</h3>
+        <h4>Harvard Medical School · Massachusetts General Hospital</h4>
+        <p>Personalized <strong>PBPK modeling</strong> and <strong>diffusion-model applications</strong> in healthcare.</p>
+      </div>
+      <div class="jt-item reveal d3">
+        <div class="jt-date">2020 — 2025</div>
+        <h3>Ph.D. in Information Sensor &amp; Instrument Engineering</h3>
+        <h4>Zhejiang University</h4>
+        <p>Direct-entry doctoral program. Deep-learning-based <strong>medical image reconstruction</strong> and <strong>AIGC</strong>.</p>
+      </div>
+      <div class="jt-item reveal d4">
+        <div class="jt-date">2016 — 2020</div>
+        <h3>B.Eng. in Physics / Optoelectronic Engineering</h3>
+        <h4>Zhejiang University of Technology</h4>
+        <p>Undergraduate studies; outstanding graduate of Zhejiang Province.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="contact-box reveal">
+    <h2>Say hello.</h2>
+    <p>Questions, ideas, or just want to chat about anything — my inbox is open.</p>
+    <ul class="social-list" style="justify-content:center;">
+      <li><a class="social-item" href="mailto:rickhu@vivo.com">✉️ rickhu@vivo.com</a></li>
+      <li><a class="social-item" href="mailto:rickhu@zju.edu.cn">✉️ rickhu@zju.edu.cn</a></li>
+      <li><a class="social-item" href="https://github.com/RickHH" target="_blank" rel="noopener">GitHub →</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="wrap site-footer">
+  <span>© <span id="year">2026</span> Rui Hu</span>
+  <span>Last updated Sep 2026 · Hosted on GitHub Pages</span>
+</footer>
+
+<div class="lightbox" id="lightbox" hidden>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Year ---- */
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ---- Theme toggle ---- */
+  var toggle = document.getElementById('theme-toggle');
+  toggle.addEventListener('click', function () {
+    var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) {}
+  });
+  var metaTheme = document.querySelector('meta[name="theme-color"]:not([media])');
+
+  /* ---- Progress bar + sticky header ---- */
+  var progress = document.getElementById('progress');
+  var header = document.getElementById('site-header');
+  addEventListener('scroll', function () {
+    var h = document.documentElement;
+    progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    header.classList.toggle('is-stuck', h.scrollTop > 8);
+  }, { passive: true });
+
+  /* ---- Reveal on scroll (staggered) ---- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -5% 0px', threshold: 0 });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ---- Scrollspy ---- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.header-nav a[href^="#"]'));
+  var sections = navLinks.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if ('IntersectionObserver' in window && sections.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(function (a) {
+          a.classList.toggle('is-active', a.getAttribute('href') === '#' + entry.target.id);
+        });
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(function (s) { spy.observe(s); });
+  }
+
+  /* ---- Typewriter (hero focus) ---- */
+  var words = ['Diffusion Models.', 'Generative AI.', 'Vision-Language Models.', 'On-device AI.'];
+  var tw = document.getElementById('typewriter');
+  if (tw && !reduceMotion) {
+    var wi = 0, ci = 0, del = false;
+    (function type() {
+      tw.textContent = words[wi].slice(0, ci);
+      var d = del ? 38 : 78;
+      if (!del && ci === words[wi].length) { d = 1900; del = true; }
+      else if (del && ci === 0) { del = false; wi = (wi + 1) % words.length; d = 380; }
+      else ci += del ? -1 : 1;
+      setTimeout(type, d);
+    })();
+  } else if (tw) { tw.textContent = words[0]; }
+
+  /* ---- News: show all / less ---- */
+  var newsToggle = document.getElementById('news-toggle');
+  var extraNews = document.querySelectorAll('#news [data-extra]');
+  newsToggle.addEventListener('click', function () {
+    var opening = extraNews[0].hidden;
+    extraNews.forEach(function (li) { li.hidden = !opening; });
+    newsToggle.textContent = opening ? 'Show less ↑' : 'Show all news ↓';
+  });
+
+  /* ---- Publication filters ---- */
+  var pubItems = Array.prototype.slice.call(document.querySelectorAll('.pub-item'));
+  var emptyNote = document.getElementById('pub-empty');
+  function applyFilter(key) {
+    var shown = 0;
+    pubItems.forEach(function (li) {
+      var ok = key === 'all' ? true :
+               key === 'selected' ? li.hasAttribute('data-selected') :
+               (li.dataset.cats || '').split(' ').indexOf(key) !== -1;
+      li.hidden = !ok;
+      if (ok) {
+        li.style.animation = 'none';
+        void li.offsetWidth;
+        li.style.animation = '';
+        li.style.animationDelay = (shown * 60) + 'ms';
+        shown++;
+      }
+    });
+    emptyNote.hidden = shown > 0;
+  }
+  document.getElementById('pub-filters').addEventListener('click', function (e) {
+    var btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+    applyFilter(btn.dataset.filter);
+  });
+  applyFilter('selected');
+
+  /* ---- tl;dr smooth accordion ---- */
+  document.querySelectorAll('.tldr-btn').forEach(function (btn) {
+    var body = btn.closest('.pub-item').querySelector('.pub-tldr');
+    btn.addEventListener('click', function () {
+      var opening = !body.classList.contains('open');
+      body.classList.toggle('open', opening);
+      btn.textContent = opening ? 'tl;dr −' : 'tl;dr +';
+    });
+  });
+
+  /* ---- Card 3D tilt (desktop, motion-safe) ---- */
+  if (!reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.card').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5;
+        var y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.setProperty('--rx', (-y * 3.2).toFixed(2) + 'deg');
+        card.style.setProperty('--ry', (x * 3.2).toFixed(2) + 'deg');
+      });
+      card.addEventListener('mouseleave', function () {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+
+  /* ---- Lightbox (only for figures that contain a real image) ---- */
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+  document.querySelectorAll('.card-figure img').forEach(function (img) {
+    img.closest('.card-figure').classList.add('has-img');
+    img.addEventListener('click', function () {
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      lb.hidden = false;
+      requestAnimationFrame(function () { lb.classList.add('is-open'); });
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function closeLightbox() {
+    lb.classList.remove('is-open');
+    document.body.style.overflow = '';
+    setTimeout(function () { lb.hidden = true; lbImg.src = ''; }, 240);
+  }
+  lb.addEventListener('click', closeLightbox);
+  addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) closeLightbox(); });
+
+  /* ---- Cursor glow ---- */
+  var glow = document.getElementById('cursor-glow');
+  if (!reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    var gx = -600, gy = -600, tx = gx, ty = gy;
+    addEventListener('mousemove', function (e) { tx = e.clientX; ty = e.clientY; }, { passive: true });
+    (function follow() {
+      gx += (tx - gx) * 0.08; gy += (ty - gy) * 0.08;
+      glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+      requestAnimationFrame(follow);
+    })();
+  }
+})();
+</script>
+
+</body>
+</html>
+
+
+
