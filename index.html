@@ -9,6 +9,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-T6HBJST6');</script>
 <!-- End Google Tag Manager -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FTN6JGJTLF"></script>
+<script>
+  /* GA4 direct (events only). Pageviews stay with GTM to avoid double counting. */
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FTN6JGJTLF', { send_page_view: false });
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rui Hu</title>
 <meta name="author" content="Rui Hu">
@@ -1017,6 +1025,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 })();
 </script>
 
+<script>
+/* ---- engagement events → GA4 (card clicks, outbound links, scroll depth, section views) ---- */
+(function () {
+  var send = function (name, params) {
+    try { gtag('event', name, params); } catch (e) {}
+  };
+
+  /* 1) Selected Research cards: which paper / which link gets clicked */
+  document.querySelectorAll('.card').forEach(function (card, i) {
+    var t = card.querySelector('.card-title');
+    var title = t ? t.textContent.trim() : '';
+    var v = card.querySelector('.card-venue');
+    var venue = v ? v.textContent.trim() : '';
+    card.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        send('card_click', {
+          card_title: title.slice(0, 90),
+          card_venue: venue,
+          card_position: i + 1,
+          link_type: a.classList.contains('mlink') ? a.textContent.trim() : 'title',
+          link_url: a.href
+        });
+      });
+    });
+  });
+
+  /* 2) Every other link in the page (news, publications, contact, nav) */
+  document.querySelectorAll('a.mlink').forEach(function (a) {
+    if (a.closest('.card')) return;
+    a.addEventListener('click', function () {
+      var sec = a.closest('section');
+      send('link_click', {
+        link_text: a.textContent.trim(),
+        link_url: a.href,
+        section_id: sec ? (sec.id || '') : ''
+      });
+    });
+  });
+
+  /* 3) Scroll depth: 25 / 50 / 75 / 100 % */
+  var marks = [25, 50, 75, 100], sent = {};
+  function depth() {
+    var d = document.documentElement, b = document.body;
+    var total = (d.scrollHeight || b.scrollHeight) - d.clientHeight;
+    var top = d.scrollTop || b.scrollTop || 0;
+    var pct = total > 0 ? Math.min(100, Math.round(top / total * 100)) : 100;
+    marks.forEach(function (m) {
+      if (pct >= m && !sent[m]) { sent[m] = 1; send('scroll_depth', { percent_scrolled: m }); }
+    });
+  }
+  window.addEventListener('scroll', depth, { passive: true });
+  window.addEventListener('load', depth);
+  depth();
+
+  /* 4) Which sections actually get seen */
+  var seen = {};
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var id = e.target.id;
+        if (e.isIntersecting && id && !seen[id]) { seen[id] = 1; send('section_view', { section_id: id }); }
+      });
+    }, { threshold: 0.35 });
+    document.querySelectorAll('section[id]').forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
 </body>
 </html>
 
