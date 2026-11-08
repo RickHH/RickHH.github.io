@@ -322,6 +322,8 @@ section { padding: 46px 0; }
   color: var(--text-2); margin: 8px 0 8px;
 }
 .card-desc { font-size: 14px; color: var(--text-2); margin: 0 0 14px; }
+.card-authors { font-size: 12.5px; color: var(--text-2); margin: -2px 0 10px; line-height: 1.5; }
+.card-authors strong { color: var(--text); font-weight: 650; }
 .mark {
   background: linear-gradient(transparent 58%, var(--mark-bg) 58%);
   color: var(--text); font-weight: 500;
@@ -559,6 +561,11 @@ position: fixed; inset: 0; z-index: 200;
     <div class="section-head"><span class="section-index">01</span><h2 class="section-title">News</h2></div>
     <ul class="timeline">
       <li class="news-item reveal d1">
+        <div class="news-meta"><span class="mono-date">Nov 2026</span><span class="badge" data-kind="paper">paper</span></div>
+        <p class="news-text"><strong>FlashRelight</strong> was accepted to <strong>NeurIPS 2026</strong> — a two-stage framework that delightens a portrait video and then synthesizes dynamic lighting from envmap sequences, lighting text, or a reference video.</p>
+        <div class="news-links"><a class="mlink" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://github.com/vivoCameraResearch/FlashRelight" target="_blank" rel="noopener">Code</a></div>
+      </li>
+      <li class="news-item reveal d1">
         <div class="news-meta"><span class="mono-date">Jan 2026</span><span class="badge" data-kind="paper">paper</span></div>
         <p class="news-text"><strong>Q-Cache</strong> accepted to <strong>AAAI 2026</strong> — visual attention is valuable in less than half of decode layers for multimodal LLMs; <strong>ST³</strong> accepted to <strong>AAAI 2025</strong> — accelerating multimodal LLMs by spatial-temporal visual token trimming.</p>
         <div class="news-links"><a class="mlink" href="https://ojs.aaai.org/index.php/AAAI/article/view/38414" target="_blank" rel="noopener">Q-Cache</a><a class="mlink" href="https://ojs.aaai.org/index.php/AAAI/article/view/33201" target="_blank" rel="noopener">ST³</a></div>
@@ -603,9 +610,21 @@ position: fixed; inset: 0; z-index: 200;
     <div class="cards">
 
       <article class="card reveal d1">
-        <div class="card-figure" style="--p1:#2997ff;--p2:#6a5cff;">
-          <span class="fig-emoji">👗</span>
-          <!-- ✏️ Teaser image: replace the emoji span with <img src="..." alt="FashionR2R teaser"> -->
+        <div class="card-figure has-img" style="--p1:#ffb02e;--p2:#ff5e5e;">
+          <img src="fig-flashrelight.png" alt="FlashRelight qualitative comparison — portrait video relit with dynamic environment lighting" width="750" height="336" loading="lazy" decoding="async">
+        </div>
+        <div class="card-body">
+          <a class="card-title" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">FlashRelight: Portrait Video Relighting with Dynamic Lighting</a>
+          <p class="card-venue">NeurIPS · 2026</p>
+          <p class="card-authors">Jiahui Sheng, Le Li, Limin Lin, Jiahao Li, Wansen Feng, Hong Gu, Shuhan Chen, Xiaorun Li, <strong>Rui Hu</strong></p>
+          <p class="card-desc">Two-stage <span class="mark">delight-then-relight</span> framework for portrait video — dynamic lighting from envmap sequences, text, or a <span class="mark">reference video</span>.</p>
+          <div class="card-links"><a class="mlink" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://github.com/vivoCameraResearch/FlashRelight" target="_blank" rel="noopener">Code</a></div>
+        </div>
+      </article>
+
+      <article class="card reveal d1">
+        <div class="card-figure has-img" style="--p1:#2997ff;--p2:#6a5cff;">
+          <img src="fig-fashionr2r.png" alt="FashionR2R pipeline — texture-preserving rendered-to-real translation" width="750" height="336" loading="lazy" decoding="async">
         </div>
         <div class="card-body">
           <a class="card-title" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">FashionR2R: Texture-preserving Rendered-to-Real Image Translation with Diffusion Models</a>
@@ -616,8 +635,8 @@ position: fixed; inset: 0; z-index: 200;
       </article>
 
       <article class="card reveal d2">
-        <div class="card-figure" style="--p1:#ff9f43;--p2:#ff5e8a;">
-          <span class="fig-emoji">📡</span>
+        <div class="card-figure has-img" style="--p1:#ff9f43;--p2:#ff5e8a;">
+          <img src="fig-lmpdnet.png" alt="LMPDnet unrolled TOF-PET list-mode reconstruction scheme" width="750" height="336" loading="lazy" decoding="async">
         </div>
         <div class="card-body">
           <a class="card-title" href="https://pubmed.ncbi.nlm.nih.gov/40780257/" target="_blank" rel="noopener">Deep Unrolled Primal-Dual Network for TOF-PET List-Mode Image Reconstruction</a>
@@ -628,8 +647,8 @@ position: fixed; inset: 0; z-index: 200;
       </article>
 
       <article class="card reveal d3">
-        <div class="card-figure" style="--p1:#00c7be;--p2:#34c759;">
-          <span class="fig-emoji">🔬</span>
+        <div class="card-figure has-img" style="--p1:#00c7be;--p2:#34c759;">
+          <img src="fig-dulda.png" alt="DULDA dual-domain unsupervised learned descent diagram" width="750" height="336" loading="lazy" decoding="async">
         </div>
         <div class="card-body">
           <a class="card-title" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">DULDA: Dual-Domain Unsupervised Learned Descent Algorithm for PET Image Reconstruction</a>
@@ -640,8 +659,8 @@ position: fixed; inset: 0; z-index: 200;
       </article>
 
       <article class="card reveal d4">
-        <div class="card-figure" style="--p1:#a259ff;--p2:#ff5e8a;">
-          <span class="fig-emoji">🩻</span>
+        <div class="card-figure has-img" style="--p1:#a259ff;--p2:#ff5e8a;">
+          <img src="fig-transem.png" alt="TransEM residual Swin-Transformer regularized PET reconstruction flowchart" width="750" height="336" loading="lazy" decoding="async">
         </div>
         <div class="card-body">
           <a class="card-title" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">TransEM: Residual Swin-Transformer Based Regularized PET Image Reconstruction</a>
@@ -667,6 +686,17 @@ position: fixed; inset: 0; z-index: 200;
     </div>
 
     <ul class="pub-list" id="pub-list">
+      <li class="pub-item" data-cats="aigc" data-selected>
+        <a class="pub-title" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">FlashRelight: Portrait Video Relighting with Dynamic Lighting</a>
+        <div class="pub-meta"><span class="pub-venue">NeurIPS · 2026</span><span class="chip">AIGC</span></div>
+        <p class="pub-authors">Jiahui Sheng, Le Li, Limin Lin, Jiahao Li, Wansen Feng, Hong Gu, Shuhan Chen, Xiaorun Li, <strong>Rui Hu</strong></p>
+        <div class="pub-foot">
+          <span class="pub-links"><a class="mlink" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://github.com/vivoCameraResearch/FlashRelight" target="_blank" rel="noopener">Code</a></span>
+          <button class="tldr-btn" type="button">tl;dr +</button>
+        </div>
+        <div class="pub-tldr"><div><p>Delightens a portrait video first, then synthesizes dynamic lighting under three control modalities — envmap sequences, lighting text, and reference videos — trained with a hybrid static-OLAT plus generated-dynamic-clip strategy.</p></div></div>
+      </li>
+
       <li class="pub-item" data-cats="aigc" data-selected>
         <a class="pub-title" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">FashionR2R: Texture-preserving Rendered-to-Real Image Translation with Diffusion Models</a>
         <div class="pub-meta"><span class="pub-venue">NeurIPS · 2024</span><span class="chip">AIGC</span></div>
@@ -805,7 +835,7 @@ position: fixed; inset: 0; z-index: 200;
 
 <footer class="wrap site-footer">
   <span>© <span id="year">2026</span> Rui Hu</span>
-  <span>Last updated Sep 2026 · Hosted on GitHub Pages</span>
+  <span>Last updated Nov 2026 · Hosted on GitHub Pages</span>
 </footer>
 
 <div class="lightbox" id="lightbox" hidden>
