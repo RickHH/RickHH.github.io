@@ -324,6 +324,8 @@ section { padding: 46px 0; }
 .card-desc { font-size: 14px; color: var(--text-2); margin: 0 0 14px; }
 .card-authors { font-size: 12.5px; color: var(--text-2); margin: -2px 0 10px; line-height: 1.5; }
 .card-authors strong { color: var(--text); font-weight: 650; }
+.card-authors sup { color: var(--accent); font-weight: 600; font-size: 10px; margin-left: 1px; }
+.card-note { font-size: 10.5px; color: var(--text-2); opacity: 0.72; margin: 8px 0 12px; }
 .mark {
   background: linear-gradient(transparent 58%, var(--mark-bg) 58%);
   color: var(--text); font-weight: 500;
@@ -616,20 +618,22 @@ position: fixed; inset: 0; z-index: 200;
         <div class="card-body">
           <a class="card-title" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">FlashRelight: Portrait Video Relighting with Dynamic Lighting</a>
           <p class="card-venue">NeurIPS · 2026</p>
-          <p class="card-authors">Jiahui Sheng, Le Li, Limin Lin, Jiahao Li, Wansen Feng, Hong Gu, Shuhan Chen, Xiaorun Li, <strong>Rui Hu</strong></p>
-          <p class="card-desc">Two-stage <span class="mark">delight-then-relight</span> framework for portrait video — dynamic lighting from envmap sequences, text, or a <span class="mark">reference video</span>.</p>
+          <p class="card-authors">Jiahui Sheng<sup>*</sup>, Le Li<sup>†</sup>, Limin Lin, Jiahao Li, Wansen Feng, Hong Gu, Shuhan Chen, Xiaorun Li<sup>‡</sup>, <strong>Rui Hu</strong><sup>‡</sup></p>
+          <p class="card-note">* internship at vivo · † project lead · ‡ co-corresponding authors</p>
           <div class="card-links"><a class="mlink" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://github.com/vivoCameraResearch/FlashRelight" target="_blank" rel="noopener">Code</a></div>
         </div>
       </article>
 
       <article class="card reveal d2">
         <div class="card-figure has-img" style="--p1:#2997ff;--p2:#6a5cff;">
-          <img src="fig-fashionr2r.png" alt="FashionR2R pipeline — texture-preserving rendered-to-real translation" width="750" height="336" loading="lazy" decoding="async">
+          <img src="fig-fashionr2r.jpg" alt="FashionR2R qualitative comparison — rendered-to-real translation against baselines, Ours rightmost" width="750" height="336" loading="lazy" decoding="async">
         </div>
         <div class="card-body">
           <a class="card-title" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">FashionR2R: Texture-preserving Rendered-to-Real Image Translation with Diffusion Models</a>
           <p class="card-venue">NeurIPS · 2024</p>
+          <p class="card-authors"><strong>Rui Hu</strong><sup>†</sup>, Qian He<sup>†</sup>, Gaofeng He, Jiedong Zhuang, Huang Chen, Huafeng Liu<sup>*</sup>, Huamin Wang</p>
           <p class="card-desc"><span class="mark">Texture-preserving</span> rendered-to-real translation for <span class="mark">virtual try-on</span>, bridging rendered fashion images and real photos with diffusion models.</p>
+          <p class="card-note">† equal contribution · * corresponding author</p>
           <div class="card-links"><a class="mlink" href="https://arxiv.org/abs/2410.14429" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://rickhh.github.io/FashionR2R/" target="_blank" rel="noopener">Project</a><a class="mlink" href="https://github.com/Style3D/FashionR2R" target="_blank" rel="noopener">Code</a></div>
         </div>
       </article>
@@ -641,7 +645,9 @@ position: fixed; inset: 0; z-index: 200;
         <div class="card-body">
           <a class="card-title" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">DULDA: Dual-Domain Unsupervised Learned Descent Algorithm for PET Image Reconstruction</a>
           <p class="card-venue">MICCAI · 2023</p>
+          <p class="card-authors"><strong>Rui Hu</strong>, Yunmei Chen, Kyungsang Kim, Marcio A. B. C. Rockenbach, Quanzheng Li<sup>*</sup>, Huafeng Liu<sup>*</sup></p>
           <p class="card-desc"><span class="mark">Label-free</span> learned descent in both image and sinogram domains — trained <span class="mark">without ground-truth images</span>, straight from measured data.</p>
+          <p class="card-note">* corresponding authors</p>
           <div class="card-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-43999-5_15" target="_blank" rel="noopener">Paper</a></div>
         </div>
       </article>
@@ -653,7 +659,9 @@ position: fixed; inset: 0; z-index: 200;
         <div class="card-body">
           <a class="card-title" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">TransEM: Residual Swin-Transformer Based Regularized PET Image Reconstruction</a>
           <p class="card-venue">MICCAI · 2022</p>
+          <p class="card-authors"><strong>Rui Hu</strong>, Huafeng Liu<sup>*</sup></p>
           <p class="card-desc">Embeds a <span class="mark">residual Swin-Transformer prior</span> into an EM-style loop for regularized PET reconstruction with sharper details.</p>
+          <p class="card-note">* corresponding author</p>
           <div class="card-links"><a class="mlink" href="https://link.springer.com/chapter/10.1007/978-3-031-16440-8_18" target="_blank" rel="noopener">Paper</a><a class="mlink" href="https://github.com/RickHH/TransEM" target="_blank" rel="noopener">Code</a></div>
         </div>
       </article>
@@ -677,7 +685,7 @@ position: fixed; inset: 0; z-index: 200;
       <li class="pub-item" data-cats="aigc" data-selected>
         <a class="pub-title" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">FlashRelight: Portrait Video Relighting with Dynamic Lighting</a>
         <div class="pub-meta"><span class="pub-venue">NeurIPS · 2026</span><span class="chip">AIGC</span></div>
-        <p class="pub-authors">Jiahui Sheng, Le Li, Limin Lin, Jiahao Li, Wansen Feng, Hong Gu, Shuhan Chen, Xiaorun Li, <strong>Rui Hu</strong></p>
+        <p class="pub-authors">Jiahui Sheng<sup>*</sup>, Le Li<sup>†</sup>, Limin Lin, Jiahao Li, Wansen Feng, Hong Gu, Shuhan Chen, Xiaorun Li<sup>‡</sup>, <strong>Rui Hu</strong><sup>‡</sup></p>
         <div class="pub-foot">
           <span class="pub-links"><a class="mlink" href="https://arxiv.org/abs/2611.06355" target="_blank" rel="noopener">arXiv</a><a class="mlink" href="https://github.com/vivoCameraResearch/FlashRelight" target="_blank" rel="noopener">Code</a></span>
           <button class="tldr-btn" type="button">tl;dr +</button>
